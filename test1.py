@@ -1,5 +1,14 @@
-number = int(input("Enter natural number: "))
+CYRILLIC_SYMBOLS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяєіїґ"
+TRANSLATION = ("a", "b", "v", "g", "d", "e", "e", "j", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u",
+               "f", "h", "ts", "ch", "sh", "sch", "", "y", "", "e", "yu", "ya", "je", "i", "ji", "g")
 
-result = (number % 2 == 0) and "Even" or "Odd"
+TRANS = {} 
+    
+for c, l in zip(CYRILLIC_SYMBOLS, TRANSLATION):
+    TRANS[ord(c)] = l
+    TRANS[ord(c.upper())] = l.upper()
 
-print(f'The number {number} is {result}.')
+def translate(name):
+    return name.translate(TRANS)
+
+print(translate('12ФыВа34 5пИрУ6.lopAA'))
