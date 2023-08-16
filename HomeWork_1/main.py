@@ -1,10 +1,11 @@
+
 import shutil
 import sys
 import scan
 import normalize
 from pathlib import Path
 
-
+#update 16-08-2023
 
 def hande_file(path, root_folder, dist):
     target_folder = root_folder / dist
