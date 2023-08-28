@@ -140,7 +140,9 @@ def get_folder_objects(root_path):
             except OSError:
                 pass
 
-def main(folder_path):
+def main():
+    path = sys.argv[1]
+    folder_path = Path(path)
     scan(folder_path)
 
     for file in image_files:
@@ -168,4 +170,4 @@ if __name__ == '__main__':
     print(f"Start in {path}")
 
     arg = Path(path)
-    main(arg.resolve())
+    main()

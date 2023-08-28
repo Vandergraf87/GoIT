@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='clean_folder',
-    version='0.0.1b',
+    version='0.0.2',
     description='cleaning up my closet, good and noice',
     url='https://github.com/Vandergraf87/GoIT',
     author='Dmytro Komarov',
