@@ -29,19 +29,19 @@ def get_birthdays_per_week(users):
                 if current_date.day > user['birthday'].day:
                     pass
                 else:
-                    if user_bd_weekday == 5 or user_bd_weekday == 6:  
+                    if user_bd_weekday in (5, 6):  
                         greets_list[days_name[0]].append(user['name'])
                     else:
                         greets_list[days_name[user_bd_weekday]].append(user['name'])
 
             else:
-                if user_bd_weekday == 5 or user_bd_weekday == 6:
+                if user_bd_weekday in (5, 6):
                     greets_list[days_name[0]].append(user['name'])
                 else:
                     greets_list[days_name[user_bd_weekday]].append(user['name'])
 
         elif current_date.year < user['birthday'].year:
-            if user_bd_weekday == 5 or user_bd_weekday == 6:
+            if user_bd_weekday in (5, 6):
                 greets_list[days_name[0]].append(user['name'])
             else:
                 greets_list[days_name[user_bd_weekday]].append(user['name'])
