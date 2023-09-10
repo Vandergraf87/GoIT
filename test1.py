@@ -13,13 +13,34 @@
 
 # print(translate('12ФыВа34 5пИрУ6.lopAA'))
 
-from collections import defaultdict
+#---------------------------------------------------------------------------------------------------
 
-words = ['apple', 'zoo', 'lion', 'lama', 'bear', 'bet', 'wolf', 'appendix']
-grouped_words = defaultdict(list)
+# from collections import defaultdict
 
-for word in words:
-    char = word[0]
-    grouped_words[char].append(word)
+# words = ['apple', 'zoo', 'lion', 'lama', 'bear', 'bet', 'wolf', 'appendix']
+# grouped_words = defaultdict(list)
 
-print(grouped_words)
+# for word in words:
+#     char = word[0]
+#     grouped_words[char].append(word)
+
+# print(grouped_words)
+
+#----------------------------------------------------------------------------------------------------
+
+def complicated(x, y):
+    return x / y
+
+
+def logged_func(func):
+    def inner(x, y):
+        print(f'called with {x}, {y}')
+        result = func(x, y)
+        print(f'result: {result}')
+        return result
+    return inner
+
+
+complicated = logged_func(complicated)
+
+complicated(8, 2)
