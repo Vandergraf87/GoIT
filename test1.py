@@ -28,19 +28,22 @@
 
 #----------------------------------------------------------------------------------------------------
 
-def complicated(x, y):
-    return x / y
+# def complicated(x, y):
+#     return x / y
 
 
-def logged_func(func):
-    def inner(x, y):
-        print(f'called with {x}, {y}')
-        result = func(x, y)
-        print(f'result: {result}')
-        return result
-    return inner
+# def logged_func(func):
+#     def inner(x, y):
+#         print(f'called with {x}, {y}')
+#         result = func(x, y)
+#         print(f'result: {result}')
+#         return result
+#     return inner
 
 
-complicated = logged_func(complicated)
+# complicated = logged_func(complicated)
 
-complicated(8, 2)
+# complicated(8, 2)
+
+p = {1, 2, 3, 4, 5} - {3, 4} ^ {5, 6, 7}
+print(p)
