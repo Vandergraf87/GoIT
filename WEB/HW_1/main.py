@@ -4,6 +4,7 @@ from sorter import sorter
 from abc import ABC, abstractmethod
 
 class MyBaseClass(ABC):
+
     @abstractmethod
     def display_contacts(self, contacts):
         pass
@@ -28,14 +29,12 @@ class MyBaseClass(ABC):
     def run(self):
         pass
 
-
 class ConsoleInterface(MyBaseClass):
     def __init__(self):
         self.phone_book = AddressBook()
         self.notebook = Notebook()
 
-
-    def display_contacts(self, contacts):
+    def display_contacts(self):
         self.phone_book.show_all()
         
     def display_notes(self, notes):
@@ -99,7 +98,7 @@ class ConsoleInterface(MyBaseClass):
             option_select = input("Please select an option: ")
 
             if option_select == "1":
-                self.display_contacts(self.phone_book)
+                self.display_contacts()
 
             elif option_select == "2":
                 name = input("Enter contact name: ").lower()
