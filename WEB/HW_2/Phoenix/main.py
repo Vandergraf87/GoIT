@@ -1,6 +1,6 @@
-from contacts import AddressBook
-from notebook import Notebook, Note
-from sorter import sorter
+from contacts.contacts import AddressBook
+from notebook.notebook import Notebook, Note
+from sorter.sorter import sorter
 from abc import ABC, abstractmethod
 
 class MyBaseClass(ABC):
