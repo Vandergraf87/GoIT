@@ -26,34 +26,35 @@
 #===============================Asynchronous version==========================#
 
 import time
-from multiprocessing import Pool, cpu_count
+import logging
+from multiprocessing import Pool, cpu_count, current_process
+
+logger = logging.getLogger()
+stream_handler = logging.StreamHandler()
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
 
 start = time.perf_counter()
 
-def  calculating(numbers):
+def  calculating(*numbers):
     total_results = list()
+    print(numbers)
+    logger.debug(f"pid={current_process().pid}, results = {total_results}")
     for n in numbers:
         result = list()
         for i in range(1, n+1):
             if n%i == 0:
                 result.append(i)
         total_results.append(result)
-    return print(total_results)
-
-
-def factorize(numbers):
-    with Pool(cpu_count()) as pool:
-        mapped = pool.apply_async(calculating, numbers)
-    return mapped
-
-test_numb = [128, 255, 99999, 10651060]
-factorize(test_numb)
+    return total_results
 
 stop = time.perf_counter()
-
 print(f'Calculating time = {stop-start}')
 
-
+if __name__ == '__main__':
+    test_numb = (128, 255, 99999, 10651060)
+    with Pool(processes=cpu_count()) as pool:
+        logger.debug(pool.map(calculating, test_numb))
 
 #=====================================Test values==================================#
 # assert a == [1, 2, 4, 8, 16, 32, 64, 128]
