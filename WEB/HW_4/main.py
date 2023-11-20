@@ -1,14 +1,13 @@
+import time
 import json
+import socket
 import mimetypes
 import urllib.parse
-import socket
 from pathlib import Path
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
-import time
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 BASE_DIR = Path()
-
 
 def socket_send_message(message):
     host = socket.gethostname()
@@ -79,7 +78,7 @@ class HttpGetHandler(BaseHTTPRequestHandler):
 def save_data_to_json(data):
     data_parse = urllib.parse.unquote_plus(data)
     data_parse = {key: value for key, value in [el.split('=') for el in data_parse.split('&')]}
-    data_parse['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S.%f", time.localtime())
+    data_parse['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     with open(BASE_DIR.joinpath('storage/data.json'), 'r', encoding='utf-8') as existing_file:
         try:
