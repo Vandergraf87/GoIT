@@ -1,13 +1,7 @@
 from models import Author, Quote
-from mongoengine import connect
+from dbconnect import connectdb
 
-database_name = 'testdb.collone'
-
-# MongoDB Atlas connection URI
-uri = f'mongodb+srv://komarovdmytro:YdEjWalBjoLF4ouP@goit.uzix2dv.mongodb.net/{database_name}?retryWrites=true&w=majority'
-
-# Connect to MongoDB
-connect(host=uri)
+connectdb()
 
 def search_quotes(query_type, query_value):
     if query_type == 'name':
@@ -27,7 +21,7 @@ def search_quotes(query_type, query_value):
 
 if __name__ == "__main__":
     while True:
-        user_input = input("Введіть команду: ")
+        user_input = input("Enter your request: ")
         if user_input.startswith('name:'):
             query_value = user_input.split(':')[1].strip()
             result = search_quotes('name', query_value)
@@ -46,4 +40,4 @@ if __name__ == "__main__":
         elif user_input == 'exit':
             break
         else:
-            print("Невірний формат команди.")
+            print("Invalid format")
