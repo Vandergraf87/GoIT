@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Quotes</title>
+</head>
+<body>
+    <h1>Welcome to My Quotes!</h1>
+    
+{% if quotes %}
+    <ul>
+        {% for quote in quotes %}
+            <li>
+                "{{ quote.text }}"
+                by {{ quote.author }} (about)
+                Tags: {{ quote.tags|join:", " }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    No quotes available.
+{% endif %}
+</body>
+</html>
