@@ -1,8 +1,17 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Quotes</title>
+</head>
+<body>
+    <h1>Welcome to My Quotes!</h1>
 
-{% block content %}
-  <h2>Quotes</h2>
-  {% for quote in quotes %}
-    <p>{{ quote.text }} - {{ quote.author.name }}</p>
-  {% endfor %}
-{% endblock %}
+    {% for quote in quotes %}
+        <div>
+            <p>"{{ quote.text }}"</p>
+            <p>by {{ quote.author }} ({{ quote.about }})</p>
+            <p>Tags: {{ quote.tags }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>

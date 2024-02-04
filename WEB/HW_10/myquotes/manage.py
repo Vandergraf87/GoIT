@@ -17,6 +17,9 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+# from django.db import connection
+# connection.close()
+
 
 if __name__ == '__main__':
     main()

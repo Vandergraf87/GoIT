@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'quotes',
     'djongo',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -98,11 +99,15 @@ WSGI_APPLICATION = 'myquotes.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'ENFORCE_SCHEMA': True,
+        'ENFORCE_SCHEMA': False,
         'NAME': 'testdb',  # Вкажіть тут назву бази даних, яку ви хочете використовувати
+        'CONN_MAX_AGE': 600,
         'CLIENT': {
             'host': 'mongodb+srv://komarovdmytro:YdEjWalBjoLF4ouP@goit.uzix2dv.mongodb.net/testdb?retryWrites=true&w=majority',
-        }
+        },
+        'OPTIONS': {
+            'is_mongo': True,
+        },
     }
 }
 
