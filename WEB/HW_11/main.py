@@ -1,3 +1,6 @@
+# To start app use:
+# uvicorn main:app --host localhost --port 8000 --reload
+
 from fastapi import FastAPI, HTTPException, Depends, status, APIRouter
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Date, text, or_
 from sqlalchemy.ext.declarative import declarative_base
