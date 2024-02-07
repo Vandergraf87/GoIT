@@ -28,6 +28,15 @@ class Contact(Base):
     def as_dict(self) -> Dict[str, str]:
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
+class ContactPydantic(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: str
+    phone_number: str
+    birthday: date
+    additional_data: str = None
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -77,12 +86,12 @@ def read_contacts(q: str = None, db: Session = Depends(get_db)):
         contacts = db.query(Contact).all()
     return [contact.as_dict() for contact in contacts]
 
-@app.get("/contacts/{contact_id}", response_model=Contact)
+@app.get("/contacts/{contact_id}", response_model=ContactPydantic)
 def get_contact(contact_id: int, db: Session = Depends(get_db)):
     db_contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if db_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
-    return db_contact
+    return db_contact.as_dict()
 
 @app.put("/contacts/{contact_id}", response_model=Dict[str, str])
 def update_contact(contact_id: int, contact: ContactUpdate, db: Session = Depends(get_db)):
@@ -98,7 +107,7 @@ def update_contact(contact_id: int, contact: ContactUpdate, db: Session = Depend
     db.refresh(db_contact)
     return db_contact.as_dict()
 
-@app.delete("/contacts/{contact_id}", response_model=Contact)
+@app.delete("/contacts/{contact_id}", response_model=Dict[str, str])
 def delete_contact(contact_id: int, db: Session = Depends(get_db)):
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if contact is None:
@@ -106,13 +115,13 @@ def delete_contact(contact_id: int, db: Session = Depends(get_db)):
     
     db.delete(contact)
     db.commit()
-    return contact
+    return contact.as_dict()
 
-@app.get("/contacts/birthday", response_model=List[Contact])
+@app.get("/contacts/birthday", response_model=List[ContactPydantic])
 def upcoming_birthdays(db: Session = Depends(get_db)):
     today = date.today()
     end_date = today + timedelta(days=7)
     contacts = db.query(Contact).filter(
         text(f"EXTRACT(MONTH FROM birthday) = {today.month} AND EXTRACT(DAY FROM birthday) BETWEEN {today.day} AND {end_date.day}")
     ).all()
-    return contacts
+    return [ContactPydantic(**contact.as_dict()) for contact in contacts]
