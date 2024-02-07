@@ -2,7 +2,7 @@
 # uvicorn main:app --host localhost --port 8000 --reload
 
 from fastapi import FastAPI, HTTPException, Depends, status, APIRouter
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Date, text, or_
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Date, text, or_, extract
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from pydantic import BaseModel
@@ -134,7 +134,25 @@ def delete_contact(contact_id: int, db: Session = Depends(get_db)):
 def upcoming_birthdays(db: Session = Depends(get_db)):
     today = date.today()
     end_date = today + timedelta(days=7)
-    contacts = db.query(Contact).filter(
-        text(f"EXTRACT(MONTH FROM birthday) = {today.month} AND EXTRACT(DAY FROM birthday) BETWEEN {today.day} AND {end_date.day}")
-    ).all()
-    return [contact.as_dict() for contact in contacts]
+
+    # Extract month and day from the birthday column
+    birthday_month = extract('month', Contact.birthday)
+    birthday_day = extract('day', Contact.birthday)
+
+    contacts = (
+        db.query(Contact)
+        .filter(
+            (
+                (birthday_month == today.month)
+                & (birthday_day >= today.day)
+                & (birthday_day <= end_date.day)
+            )
+            | (
+                (birthday_month == (today.month % 12) + 1)
+                & (birthday_day <= end_date.day)
+            )
+        )
+        .all()
+    )
+
+    return [ContactPydantic(**contact.as_dict()) for contact in contacts]
