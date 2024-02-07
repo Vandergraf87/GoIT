@@ -29,12 +29,12 @@ class Contact(Base):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 class ContactPydantic(BaseModel):
-    id: int
+    id: Union[str, int]
     first_name: str
     last_name: str
     email: str
     phone_number: str
-    birthday: date
+    birthday: Union[str, date]
     additional_data: str = None
 
 Base.metadata.create_all(bind=engine)
@@ -64,7 +64,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/contacts/", response_model=Dict[str, str])
+@app.post("/contacts/", response_model=ContactPydantic)
 def create_contact(contact: ContactCreate, db: Session = Depends(get_db)):
     db_contact = Contact(**contact.dict())
     db.add(db_contact)
@@ -72,7 +72,7 @@ def create_contact(contact: ContactCreate, db: Session = Depends(get_db)):
     db.refresh(db_contact)
     return db_contact.as_dict()
 
-@app.get("/contacts/", response_model=List[Dict[str, str]])
+@app.get("/contacts/", response_model=List[ContactPydantic])
 def read_contacts(q: str = None, db: Session = Depends(get_db)):
     if q:
         contacts = db.query(Contact).filter(
@@ -84,7 +84,15 @@ def read_contacts(q: str = None, db: Session = Depends(get_db)):
         ).all()
     else:
         contacts = db.query(Contact).all()
-    return [contact.as_dict() for contact in contacts]
+
+    contact_list = []
+    for contact in contacts:
+        contact_dict = contact.as_dict()
+        contact_dict['id'] = str(contact.id)
+        contact_dict['birthday'] = str(contact.birthday)
+        contact_list.append(ContactPydantic(**contact_dict))
+
+    return contact_list
 
 @app.get("/contacts/{contact_id}", response_model=ContactPydantic)
 def get_contact(contact_id: int, db: Session = Depends(get_db)):
@@ -124,4 +132,4 @@ def upcoming_birthdays(db: Session = Depends(get_db)):
     contacts = db.query(Contact).filter(
         text(f"EXTRACT(MONTH FROM birthday) = {today.month} AND EXTRACT(DAY FROM birthday) BETWEEN {today.day} AND {end_date.day}")
     ).all()
-    return [ContactPydantic(**contact.as_dict()) for contact in contacts]
+    return [contact.as_dict() for contact in contacts]
