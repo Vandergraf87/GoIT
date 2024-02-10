@@ -30,18 +30,8 @@ class UserDB(Base):
     username = Column(String, index=True, nullable=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    token = Column(String)
 
+class UserDBInResponse(UserDB):
     class Config:
         orm_mode = True
-
-DATABASE_URL = "postgresql://postgres:admin@localhost/hw11"
-
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-def init_db():
-    # Створення таблиць
-    Base.metadata.create_all(bind=engine)
-
-# Тепер викличіть `init_db()` перед викликом вашої програми
-init_db()
