@@ -1,3 +1,4 @@
+.env
 __pycache__/
 myquotes/myquotes/__pycache__/
 myquotes/quotes/__pycache__/
