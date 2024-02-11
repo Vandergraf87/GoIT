@@ -9,12 +9,21 @@ from .models import Contact, ContactPydantic, ContactCreate, ContactUpdate, get_
 from passlib.context import CryptContext
 from .auth_schemas import UserCreate, UserLogin, User, UserDB, UserDBInResponse
 from .auth import pwd_context, get_current_user, verify_password, create_access_token
+#from fastapi_limiter import Limiter
+from fastapi_limiter.depends import RateLimiter
 
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+# limiter = Limiter(
+#     key_func=lambda _: "global",
+#     storage_uri="memory://",
+# )
 
-@router.post("/contacts/", response_model=ContactPydantic)
+# limiter.init_app(app)
+
+
+@router.post("/contacts/", response_model=ContactPydantic, dependencies=[Depends(RateLimiter(times=5, minutes=1))])
 def create_contact(
     contact: ContactCreate,
     current_user: User = Depends(get_current_user),

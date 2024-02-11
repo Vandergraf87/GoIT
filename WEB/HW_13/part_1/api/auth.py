@@ -12,7 +12,7 @@ from .auth_schemas import User
 from pathlib import Path
 from pydantic import EmailStr, BaseModel
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-
+import secrets
 
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
@@ -38,6 +38,22 @@ conf = ConnectionConfig(
     VALIDATE_CERTS=True,
     TEMPLATE_FOLDER=Path(__file__).parent / 'templates' / '',
 )
+
+def generate_and_save_verification_token(user: UserDB, db: Session):
+    verification_token = secrets.token_urlsafe(16)
+    user.verification_token = verification_token
+    db.commit()
+
+def verify_email_token(token: str, db: Session):
+    user = db.query(UserDB).filter(UserDB.verification_token == token).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid verification token",
+        )
+    user.is_verified = True
+    user.verification_token = None
+    db.commit()
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -110,7 +126,12 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
 
 router = APIRouter()
 
-def register_user(user: UserCreate, db: Session = Depends(get_db), background_tasks: BackgroundTasks = Depends()):
+@router.post("/register")
+async def register_user(
+    user: UserCreate, 
+    db: Session = Depends(get_db), 
+    background_tasks: BackgroundTasks = BackgroundTasks()
+):
     existing_user = db.query(UserDB).filter(UserDB.email == user.email).first()
     if existing_user:
         raise HTTPException(
@@ -124,6 +145,8 @@ def register_user(user: UserCreate, db: Session = Depends(get_db), background_ta
     db.commit()
     db.refresh(db_user)
 
+    generate_and_save_verification_token(db_user, db)
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     db_user.token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
 
@@ -131,16 +154,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db), background_ta
 
     return db_user
 
-def login_user(form_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(UserDB).filter(UserDB.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    user.token = create_access_token(data={"sub": user.email})
-
-    return {"access_token": user.token, "token_type": "bearer"}
+@router.get('/confirm-email/{token}')
+async def confirm_email(token: str, db: Session = Depends(get_db)):
+    verify_email_token(token, db)
+    return {"message": "Email confirmed"}

@@ -31,6 +31,7 @@ class UserDB(Base):
     hashed_password = Column(String)
     token = Column(String)
     is_verified = Column(Boolean, default=False)
+    avatar_url = Column(String)
 
 class UserDBInResponse(UserDB):
     class Config:
