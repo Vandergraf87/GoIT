@@ -1,0 +1,3 @@
+mongoexport --uri="mongodb+srv://komarovdmytro:YdEjWalBjoLF4ouP@goit.uzix2dv.mongodb.net/testdb?retryWrites=true&w=majority" --collection=author --out=author.json
+
+mongoexport --uri="mongodb+srv://komarovdmytro:YdEjWalBjoLF4ouP@goit.uzix2dv.mongodb.net/testdb?retryWrites=true&w=majority" --collection=quote --out=quote.json
