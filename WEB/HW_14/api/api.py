@@ -15,13 +15,12 @@ from fastapi_limiter.depends import RateLimiter
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# limiter = Limiter(
-#     key_func=lambda _: "global",
-#     storage_uri="memory://",
-# )
+"""
+more comments
 
-# limiter.init_app(app)
+for comments
 
+"""
 
 @router.post("/contacts/", response_model=ContactPydantic, dependencies=[Depends(RateLimiter(times=5, minutes=1))])
 def create_contact(
@@ -59,6 +58,11 @@ def get_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Morbi pulvinar sem sem, accumsan congue nunc ornare ac. Etiam nec nunc.
+    
+    """
     db_contact = get_contact(db, contact_id)
     if not db_contact:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
