@@ -28,10 +28,20 @@ def create_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    
+    """
+    Add new contact
+    """
+
     db_contact = create_contact(db, contact, current_user.id)
     return ContactPydantic(**db_contact.as_dict())
 
 def get_user_contacts(db: Session, user_id: int, q: str = None):
+
+    """
+    Searching for contacts by their first name, last name or email
+    """
+
     query = db.query(Contact).filter(Contact.user_id == user_id)
     if q:
         query = query.filter(
@@ -77,6 +87,11 @@ def patch_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    
+    """
+    Update contact's info
+    """
+
     db_contact = get_contact(db, contact_id)
     if not db_contact:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
@@ -103,6 +118,11 @@ def delete_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    
+    """
+    Delete contacts from the DB
+    """
+
     db_contact = get_contact(db, contact_id)
     if not db_contact:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
@@ -117,6 +137,10 @@ def upcoming_birthdays(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Searching for contacts which have their birthday
+    in the next 7 days
+    """
     today = date.today()
     end_date = today + timedelta(days=7)
 
@@ -144,6 +168,12 @@ def upcoming_birthdays(
 
 @router.post("/register/", response_model_include=UserDBInResponse)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    
+    """
+    Registration of new users 
+    Checking that email is unique and not used before
+    """
+    
     existing_user = db.query(UserDB).filter(UserDB.email == user.email).first()
     if existing_user:
         raise HTTPException(
