@@ -4,17 +4,7 @@ from api.avatar import router as avatar_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter import FastAPILimiter
 
-"""
-This file is
 
-A
-M
-A
-Z
-I
-N
-G
-"""
 app = FastAPI()
 
 origins = [

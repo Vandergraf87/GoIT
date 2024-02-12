@@ -14,12 +14,6 @@ from pydantic import EmailStr, BaseModel
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 import secrets
 
-"""
-This module is used to authenticate users, generate tokens, and also send emails
-Settings and constants are located directly below this text
-Next comes the code responsible for the functionality
-"""
-
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -46,6 +40,12 @@ conf = ConnectionConfig(
 )
 
 def generate_and_save_verification_token(user: UserDB, db: Session):
+    """
+    Generate a verification token, save it for the user, and commit changes to the database.
+
+    :param user: UserDB instance for whom the verification token is generated.
+    :param db: Database session.
+    """
     verification_token = secrets.token_urlsafe(16)
     user.verification_token = verification_token
     db.commit()
@@ -62,6 +62,14 @@ def verify_email_token(token: str, db: Session):
     db.commit()
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
+    """
+    Create an access token with the provided data.
+
+    :param data: The data to be encoded in the token.
+    :param expires_delta: The expiration time delta for the token (optional).
+                          If not provided, a default expiration of 15 minutes will be used.
+    :return: The encoded JWT access token.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -79,6 +87,12 @@ def decode_token(token: str):
         return None
     
 def create_refresh_token(data: dict):
+    """
+    Create a refresh token with the provided data.
+
+    :param data: The data to be encoded in the token.
+    :return: The encoded JWT refresh token.
+    """
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
@@ -100,6 +114,12 @@ def verify_token(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
 def send_in_background_email(background_tasks: BackgroundTasks, email: EmailStr):
+    """
+    Send a welcome email in the background.
+
+    :param background_tasks: BackgroundTasks instance for scheduling background tasks.
+    :param email: Email address of the recipient.
+    """
     message = MessageSchema(
         subject="Welcome to the App",
         recipients=[email],
