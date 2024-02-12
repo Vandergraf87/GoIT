@@ -5,6 +5,11 @@ from typing import Dict, List, Optional, Union
 from datetime import date
 from pydantic import BaseModel
 
+"""
+The file contains contact models for organizing records in the database 
+when creating and/or changing contacts and using a module to check the validity of data
+"""
+
 DATABASE_URL = "postgresql://postgres:admin@localhost/hw11"
 engine = create_engine(DATABASE_URL)
 

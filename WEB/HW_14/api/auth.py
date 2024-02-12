@@ -14,6 +14,12 @@ from pydantic import EmailStr, BaseModel
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 import secrets
 
+"""
+This module is used to authenticate users, generate tokens, and also send emails
+Settings and constants are located directly below this text
+Next comes the code responsible for the functionality
+"""
+
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
