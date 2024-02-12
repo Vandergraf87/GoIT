@@ -2,6 +2,18 @@ from fastapi import FastAPI
 from api.api import router as api_router
 from api.avatar import router as avatar_router
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_limiter import FastAPILimiter
+
+"""
+A
+M
+A
+Z
+I
+N
+G
+"""
+app = FastAPI()
 
 origins = [
     "http://localhost",
@@ -9,8 +21,6 @@ origins = [
     "https://yourfrontenddomain.com",
     "https://yourfrontenddomain.com:8000",
 ]
-
-app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,6 +32,7 @@ app.add_middleware(
 
 app.include_router(api_router)
 app.include_router(avatar_router) 
+
 
 if __name__ == "__main__":
     import uvicorn

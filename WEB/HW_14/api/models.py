@@ -32,7 +32,7 @@ class ContactPydantic(BaseModel):
     last_name: str
     email: str
     phone_number: str
-    birthday: Union[str, date]
+    birthday: Union[str, date, None]
     additional_data: str = None
 
 class ContactCreate(BaseModel):
