@@ -15,12 +15,6 @@ from fastapi_limiter.depends import RateLimiter
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-"""
-more comments
-
-for comments
-
-"""
 
 @router.post("/contacts/", response_model=ContactPydantic, dependencies=[Depends(RateLimiter(times=5, minutes=1))])
 def create_contact(
@@ -28,20 +22,36 @@ def create_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    
     """
-    Add new contact
-    """
+    Add a new contact.
 
+    Parameters:
+    - `contact` (ContactCreate): The contact data to create.
+    - `current_user` (User): The current authenticated user.
+    - `db` (Session): The database session.
+
+    Returns:
+    - `ContactPydantic`: The created contact.
+    """
     db_contact = create_contact(db, contact, current_user.id)
     return ContactPydantic(**db_contact.as_dict())
 
 def get_user_contacts(db: Session, user_id: int, q: str = None):
-
     """
-    Searching for contacts by their first name, last name or email
-    """
+    Retrieve contacts for a specific user, optionally filtering by first name, last name, or email.
 
+    :param db: The database session.
+    :type db: sqlalchemy.orm.Session
+
+    :param user_id: The ID of the user for whom contacts should be retrieved.
+    :type user_id: int
+
+    :param q: The search query to filter contacts by first name, last name, or email (case-insensitive).
+    :type q: str, optional
+
+    :return: A list of contacts that match the search criteria.
+    :rtype: List[Contact]
+    """
     query = db.query(Contact).filter(Contact.user_id == user_id)
     if q:
         query = query.filter(
@@ -69,9 +79,22 @@ def get_contact(
     db: Session = Depends(get_db)
 ):
     """
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Morbi pulvinar sem sem, accumsan congue nunc ornare ac. Etiam nec nunc.
-    
+    Retrieve a contact by ID.
+
+    :param contact_id: The ID of the contact to retrieve.
+    :type contact_id: int
+
+    :param current_user: The currently authenticated user.
+    :type current_user: User, optional
+
+    :param db: The database session.
+    :type db: sqlalchemy.orm.Session
+
+    :return: The details of the retrieved contact.
+    :rtype: ContactPydantic
+
+    :raises HTTPException 404: If the contact with the specified ID is not found.
+    :raises HTTPException 403: If the authenticated user does not have permission to access the contact.
     """
     db_contact = get_contact(db, contact_id)
     if not db_contact:
@@ -87,11 +110,27 @@ def patch_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    
     """
-    Update contact's info
-    """
+    Update contact information.
 
+    :param contact_id: The ID of the contact to update.
+    :type contact_id: int
+
+    :param updates: A list of ContactUpdate objects representing the fields and values to update.
+    :type updates: List[ContactUpdate]
+
+    :param current_user: The currently authenticated user.
+    :type current_user: User, optional
+
+    :param db: The database session.
+    :type db: sqlalchemy.orm.Session
+
+    :return: A dictionary containing the updated contact information.
+    :rtype: Dict[str, str]
+
+    :raises HTTPException 404: If the contact with the specified ID is not found.
+    :raises HTTPException 403: If the authenticated user does not have permission to update the contact.
+    """
     db_contact = get_contact(db, contact_id)
     if not db_contact:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
@@ -118,11 +157,15 @@ def delete_contact(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    
     """
-    Delete contacts from the DB
-    """
+    Delete a contact from the database.
 
+    :param contact_id: The ID of the contact to be deleted.
+    :param current_user: The current authenticated user.
+    :param db: The database session.
+
+    :return: A dictionary with a message confirming the deletion.
+    """
     db_contact = get_contact(db, contact_id)
     if not db_contact:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
@@ -138,8 +181,12 @@ def upcoming_birthdays(
     db: Session = Depends(get_db)
 ):
     """
-    Searching for contacts which have their birthday
-    in the next 7 days
+    Get a list of contacts with upcoming birthdays within the next 7 days.
+
+    :param current_user: The current authenticated user.
+    :param db: The database session.
+
+    :return: A list of contacts with upcoming birthdays.
     """
     today = date.today()
     end_date = today + timedelta(days=7)
@@ -168,12 +215,14 @@ def upcoming_birthdays(
 
 @router.post("/register/", response_model_include=UserDBInResponse)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
-    
     """
-    Registration of new users 
-    Checking that email is unique and not used before
+    Register a new user.
+
+    :param user: The user data for registration.
+    :param db: The database session.
+
+    :return: The registered user with additional details.
     """
-    
     existing_user = db.query(UserDB).filter(UserDB.email == user.email).first()
     if existing_user:
         raise HTTPException(
